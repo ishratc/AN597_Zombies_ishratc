@@ -5,26 +5,73 @@ date: "October 3, 2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+First let's load our data into R
+
+```{r}
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall19/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
 ```
 
-## R Markdown
+1. Calculate the population mean and standard deviation for each quantitative random variable.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+height<-d$height
+hm<-mean(height)
+hm
+hsd<-sd(height)
+hsd
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+weight<-d$weight
+wm<-mean(weight)
+wm
+wsd<-sd(weight)
+wsd
 
-```{r cars}
-summary(cars)
+age<-d$age
+am<-mean(age)
+am
+asd<-sd(age)
+asd
+
+zombies_killed<-d$zombies_killed
+zm<-mean(zombies_killed)
+zm
+zsd<-sd(zombies_killed)
+zsd
+
+yrs_edu<-d$years_of_education
+ym<-mean(yrs_edu)
+ym
+ysd<-sd(yrs_edu)
+ysd
+
 ```
 
-## Including Plots
+2. use {ggplot} to make boxplots of each of these variables by gender
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+mh<- height[d$gender == "Male"]
+fh<- height[d$gender == "Female"]
+mw<- weight[d$gender == "Male"]
+fw<- weight[d$gender == "Female"]
+ma<- age[d$gender == "Male"]
+fa<- age[d$gender == "Female"]
+mz<- zombies_killed[d$gender == "Male"]
+fz<- zombies_killed[d$gender == "Female"]
+my<- yrs_edu[d$gender == "Male"]
+fy<- yrs_edu[d$gender == "Female"]
+par(mfrow =c(1,2))
+boxplot(mh, main = "Height", xlab = "Males", ylab = "inches")
+boxplot(fh, main = "Height", xlab = "Females", ylab = "inches")
+boxplot(mw, main = "Weight", xlab = "Males", ylab = "pounds")
+boxplot(fw, main = "Weight", xlab = "Females", ylab = "pounds")
+boxplot(ma, main = "Age", xlab = "Males", ylab = "years")
+boxplot(fa, main = "Age", xlab = "Females", ylab = "years")
+boxplot(mz, main = "# of Zombies Killed", xlab = "Males")
+boxplot(fz, main = "# of Zombies Killed", xlab = "Females")
+boxplot(my, main = "Years of Education", xlab = "Males", ylab = "years")
+boxplot(fy, main = "Years of Education", xlab = "Females", ylab = "years")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
