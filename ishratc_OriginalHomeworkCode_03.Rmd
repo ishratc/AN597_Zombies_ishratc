@@ -50,7 +50,7 @@ ysd
 
 ```
 
-2. Use {ggplot} to make boxplots of each of these variables by gender.
+2. Use {ggplot} to make boxplots of each of these variables by gender. I guess this can be used for comparison.
 
 ```{r}
 mh<- d$height[d$gender == "Male"]
@@ -76,12 +76,29 @@ boxplot(my, main = "Years of Education", xlab = "Males", ylab = "years")
 boxplot(fy, main = "Years of Education", xlab = "Females", ylab = "years")
 ```
 
-I'm an idiot it didnt use ggplot
+Now to answer the question correctly
 ```{r}
 library(ggplot2)
-height<-as.data.frame(height)
-h<- ggplot(height, aes(y=height))+geom_boxplot()
+library(readr)
+d1_url<-"https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall19/zombies.csv"
+d1<-read_csv(d1_url)
+head(d1)
+par(mfrow =c(1,2))
+h<-ggplot(data = d1, aes(x=(gender), y=(height)))
+h<- p+geom_boxplot()
 h
+w<-ggplot(data = d1, aes(x=(gender), y=(weight)))
+w<- p+geom_boxplot()
+w
+a<-ggplot(data = d1, aes(x=(gender), y=(age)))
+a<- p+geom_boxplot()
+a
+z<-ggplot(data = d1, aes(x=(gender), y=(zombies_killed)))
+z<- p+geom_boxplot()
+z
+y<-ggplot(data = d1, aes(x=(gender), y=(yrs_edu)))
+y<- p+geom_boxplot()
+y
 
 ```
 
