@@ -42,6 +42,7 @@ zsd<-sd(zombies_killed)
 zsd
 
 yrs_edu<-d$years_of_education
+str(yrs_edu)
 ym<-mean(yrs_edu)
 ym
 ysd<-sd(yrs_edu)
@@ -49,17 +50,17 @@ ysd
 
 ```
 
-2. use {ggplot} to make boxplots of each of these variables by gender
+2. Use {ggplot} to make boxplots of each of these variables by gender.
 
 ```{r}
-mh<- height[d$gender == "Male"]
-fh<- height[d$gender == "Female"]
-mw<- weight[d$gender == "Male"]
-fw<- weight[d$gender == "Female"]
-ma<- age[d$gender == "Male"]
-fa<- age[d$gender == "Female"]
-mz<- zombies_killed[d$gender == "Male"]
-fz<- zombies_killed[d$gender == "Female"]
+mh<- d$height[d$gender == "Male"]
+fh<- d$height[d$gender == "Female"]
+mw<- d$weight[d$gender == "Male"]
+fw<- d$weight[d$gender == "Female"]
+ma<- d$age[d$gender == "Male"]
+fa<- d$age[d$gender == "Female"]
+mz<- d$zombies_killed[d$gender == "Male"]
+fz<- d$zombies_killed[d$gender == "Female"]
 my<- yrs_edu[d$gender == "Male"]
 fy<- yrs_edu[d$gender == "Female"]
 par(mfrow =c(1,2))
@@ -74,4 +75,17 @@ boxplot(fz, main = "# of Zombies Killed", xlab = "Females")
 boxplot(my, main = "Years of Education", xlab = "Males", ylab = "years")
 boxplot(fy, main = "Years of Education", xlab = "Females", ylab = "years")
 ```
+
+I'm an idiot it didnt use ggplot
+```{r}
+library(ggplot2)
+height<-as.data.frame(height)
+h<- ggplot(height, aes(y=height))+geom_boxplot()
+h
+
+```
+
+
+3. Use {ggplot} to make scatterplots of height and weight un relation to age. Are these variables related? Why?
+
 
