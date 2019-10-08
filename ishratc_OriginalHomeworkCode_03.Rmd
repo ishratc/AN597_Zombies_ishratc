@@ -202,8 +202,6 @@ se for each and 95% ci for each mean
 different code for z and y
 
 ```{r}
-library(dplyr)
-sample_n()
 
 ?sample
 nd<-d[sample(nrow(d), 30),]
@@ -297,3 +295,30 @@ yaci_t
 ```
 
 that definately needs to be revised and better annotated but 5/6 done so far
+
+6. draw 99 samples of 30 
+
+
+```{r}
+s <- NULL # dummy variable to hold each sample
+for (i in 1:99){
+    s[[i]] <- sample(d, size = 30, replace=FALSE)
+}
+head(s) #that worked but it looks odd
+```
+
+calc mean now with first have 100 means for each variable = smapling dist
+
+```{r}
+sample(d, 30, repla)
+
+```
+
+
+means and sd of means 
+
+compare to se
+
+what do sampling distributions look like, graph
+
+normal?
