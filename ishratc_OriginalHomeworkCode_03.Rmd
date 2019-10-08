@@ -38,6 +38,7 @@ asd
 zombies_killed<-d$zombies_killed
 zm<-mean(zombies_killed)
 zm
+Lambda(zombies_killed)
 zsd<-sd(zombies_killed)
 zsd
 
@@ -122,20 +123,6 @@ hw
 q-q plots
 
 ```{r}
-qqnorm(d1,main="Normal QQ plot random normal variables")
-qqline(v,col="gray")
-```
-
-```{r}
-plot(theoretical_q,observed_q, main="Normal QQ plot random normal variables", xlab="Theoretical Quantiles", ylab="Sample Quantiles")
-```
-
-```{r}
-hist(height)
-qqnorm(height)
-```
-
-```{r}
 hist(height)
 qqnorm(height)
 ```
@@ -165,18 +152,65 @@ qqnorm(yrs_edu)
 
 fix ones that are not normally distributed (zombies killed and yrs of edu) both appear to be right skewed
 
-foudn this package that gives a skewness coefficient haha kind of cool not sure if it means anthing though
+actually.. these are probs poisson bc they are integers and idnependantly related 
 
 ```{r}
-install.packages("e1071") #can't install this ?
-library(e1071)
-engine.displ<-skewness(yrs_edu)
-engine.displ
+?dpois # dpois gives log density and ppois gives log distribution
+zd<-dpois(0:12, lambda = zm)
+barplot(zd)
+#looks better but there is an outlier (afraid to remove points) also can I transform them 
 
 ```
+
+```{r}
+yd<-dpois(yrs_edu, lambda = ym)
+yd
+hist(yd)
+
+yd<-dpois(x=0:10, lambda = ym)
+barplot(yd)
+
+#not sur eif either of these make sense
+```
+
+the following is just me exploring
+
+found this package that gives a skewness coefficient haha kind of cool not sure if it means anything though
+
+```{r}
+install.packages("e1071") 
+library(e1071)
+sz<-skewness(zombies_killed)
+sz
+sy<-skewness(yrs_edu)
+sy
+
+```
+
+positively skewed data
+
 
 ```{r}
 install.packages("outliers")
+library(outliers)
+outlier(zombies_killed)
 ```
+
+use sample funcion to sample one subset of 30 zombie suruvivers without replacement, from pop
+
+calc mean and sd for each variable
+se for each and 95% ci for each mean
+different code for z and y
+
+```{r}
+library(dplyr)
+sample_n()
+
+?sample
+nd<-d[sample(nrow(d), 30),]
+nd
+```
+
+
 
 
