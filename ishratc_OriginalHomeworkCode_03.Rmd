@@ -42,14 +42,12 @@ zsd<-sd(zombies_killed)
 zsd
 
 yrs_edu<-d$years_of_education
-str(yrs_edu)
 ym<-mean(yrs_edu)
 ym
 ysd<-sd(yrs_edu)
 ysd
 
 ```
-
 2. Use {ggplot} to make boxplots of each of these variables by gender. I guess this can be used for comparison.
 
 ```{r}
@@ -83,26 +81,88 @@ library(readr)
 d1_url<-"https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall19/zombies.csv"
 d1<-read_csv(d1_url)
 head(d1)
-par(mfrow =c(1,2))
-h<-ggplot(data = d1, aes(x=(gender), y=(height)))
-h<- p+geom_boxplot()
+```
+```{r}
+h <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=height))
 h
-w<-ggplot(data = d1, aes(x=(gender), y=(weight)))
-w<- p+geom_boxplot()
-w
-a<-ggplot(data = d1, aes(x=(gender), y=(age)))
-a<- p+geom_boxplot()
-a
-z<-ggplot(data = d1, aes(x=(gender), y=(zombies_killed)))
-z<- p+geom_boxplot()
-z
-y<-ggplot(data = d1, aes(x=(gender), y=(yrs_edu)))
-y<- p+geom_boxplot()
-y
+```
 
+```{r}
+w <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=weight))
+w
+```
+
+```{r}
+a <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=age))
+a
+```
+
+```{r}
+z <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=zombies_killed))
+z
+```
+
+```{r}
+y <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=years_of_education))
+y
+```
+
+3. Use {ggplot} to make scatterplots of height and weight in relation to age. Are these variables related? Why?
+
+```{r}
+hw<- ggplot(d1) + 
+      geom_point(aes(x=weight, y=height))
+hw
+```
+q-q plots
+
+```{r}
+qqnorm(d1,main="Normal QQ plot random normal variables")
+qqline(v,col="gray")
+```
+
+```{r}
+plot(theoretical_q,observed_q, main="Normal QQ plot random normal variables", xlab="Theoretical Quantiles", ylab="Sample Quantiles")
+```
+
+```{r}
+hist(height)
+qqnorm(height)
+```
+
+```{r}
+hist(height)
+qqnorm(height)
+```
+
+```{r}
+hist(weight)
+qqnorm(weight)
+```
+
+```{r}
+hist(age)
+qqnorm(age)
+```
+
+```{r}
+hist(zombies_killed)
+qqnorm(zombies_killed)
 ```
 
 
-3. Use {ggplot} to make scatterplots of height and weight un relation to age. Are these variables related? Why?
+3. Use {ggplot} to make scatterplots of height and weight in relation to age. Are these variables related? Why?
+
+```{r}
+hist(yrs_edu)
+qqnorm(yrs_edu)
+```
+
+
 
 
