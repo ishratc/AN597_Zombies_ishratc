@@ -163,6 +163,20 @@ hist(yrs_edu)
 qqnorm(yrs_edu)
 ```
 
+fix ones that are not normally distributed (zombies killed and yrs of edu) both appear to be right skewed
 
+foudn this package that gives a skewness coefficient haha kind of cool not sure if it means anthing though
+
+```{r}
+install.packages("e1071") #can't install this ?
+library(e1071)
+engine.displ<-skewness(yrs_edu)
+engine.displ
+
+```
+
+```{r}
+install.packages("outliers")
+```
 
 
