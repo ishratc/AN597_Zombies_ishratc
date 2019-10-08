@@ -38,7 +38,6 @@ asd
 zombies_killed<-d$zombies_killed
 zm<-mean(zombies_killed)
 zm
-Lambda(zombies_killed)
 zsd<-sd(zombies_killed)
 zsd
 
@@ -211,6 +210,90 @@ nd<-d[sample(nrow(d), 30),]
 nd
 ```
 
+mean and standard deviations of sample
+
+```{r}
+nheight<-nd$height
+nhm<-mean(nheight)
+nhm
+nhsd<-sd(nheight)
+nhsd
+
+nweight<-nd$weight
+nwm<-mean(nweight)
+nwm
+nwsd<-sd(nweight)
+nwsd
+
+nage<-nd$age
+nam<-mean(nage)
+nam
+nasd<-sd(nage)
+nasd
+
+nzombies_killed<-nd$zombies_killed
+nzm<-mean(nzombies_killed)
+nzm
+nzsd<-sd(nzombies_killed)
+nzsd
+
+nyrs_edu<-nd$years_of_education
+nym<-mean(nyrs_edu)
+nym
+nysd<-sd(nyrs_edu)
+nysd
+```
+
+standard errors and 95% ci
+
+```{r}
+hse<-sqrt(nhsd^2/30)
+hse
+
+wse<-sqrt(nwsd^2/30)
+wse
+
+ase<-sqrt(nasd^2/30)
+ase
+
+zse<-sqrt(nzsd^2/30)
+zse
+
+yse<-sqrt(nysd^2/30)
+yse
+```
+
+these are all sample size 30 so t distrubution needs to be used 
+
+```{r}
+lower <- nhm - qt(1 - 0.05/2, df = 29) * hse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nhm + qt(1 - 0.05/2, df = 29) * hse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+nhci_t <- c(lower, upper)
+nhci_t
+
+lower <- nwm - qt(1 - 0.05/2, df = 29) * wse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nwm + qt(1 - 0.05/2, df = 29) * wse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+nwci_t <- c(lower, upper)
+nwci_t
+
+lower <- nam - qt(1 - 0.05/2, df = 29) * ase  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nam + qt(1 - 0.05/2, df = 29) * ase  # (1-alpha)/2 each in the upper and lower tails of the distribution
+naci_t <- c(lower, upper)
+naci_t
 
 
+#doesn't lambda equal mean so shouldn't it be the same???
 
+lower <- nzm - qt(1 - 0.05/2, df = 29) * zse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nzm + qt(1 - 0.05/2, df = 29) * zse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+zwci_t <- c(lower, upper)
+zwci_t
+
+lower <- nym - qt(1 - 0.05/2, df = 29) * yse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nym + qt(1 - 0.05/2, df = 29) * yse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+yaci_t <- c(lower, upper)
+yaci_t
+
+```
+
+that definately needs to be revised and better annotated but 5/6 done so far
