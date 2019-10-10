@@ -5,6 +5,17 @@ date: "October 3, 2019"
 output: html_document
 ---
 
+Problems:
+
+1. The last question is my biggest issue, I am having trouble extracting out 99 samples. I know I made a list off 99 but I have no idea of hey are 30 rows each, in addition the list of 99 looks different form the orginal table. I feel like once I get that 
+2. I also had trouble understanding why the two non-normally distributed variables would have different code for finding CI.
+3. Suggestions for showing that height and weight are in fact related? I have a regression line now and was thinking about putting a R^2 value
+4. Any idea why I had to load my data in twice and why the firts one was not working with {ggplot} it has soemthing to do with how it was recognizing the variables. I don't think it was recongizing them as factors. 
+5. Gnerall ways to make ti prettier? There are long chunks of R code, should I break them uo more.
+
+Gosh this homework was hard thanks for all the help!
+
+
 First let's load our data into R
 
 ```{r}
@@ -48,7 +59,9 @@ ysd<-sd(yrs_edu)
 ysd
 
 ```
-2. Use {ggplot} to make boxplots of each of these variables by gender. I guess this can be used for comparison.
+2. Use {ggplot} to make boxplots of each of these variables by gender.
+
+So at first I didn't use {ggplot} because I wasn't paying attention but I ended up keeping this for refernce and comparison. Both look the same as they should!
 
 ```{r}
 mh<- d$height[d$gender == "Male"]
@@ -75,6 +88,8 @@ boxplot(fy, main = "Years of Education", xlab = "Females", ylab = "years")
 ```
 
 Now to answer the question correctly
+
+I ended up reloading the data with {readr}, because for some reason i couldnt use {ggplot} with {curl}
 ```{r}
 library(ggplot2)
 library(readr)
@@ -82,11 +97,16 @@ d1_url<-"https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/mas
 d1<-read_csv(d1_url)
 head(d1)
 ```
+
+Height Boxplot
+
 ```{r}
 h <- ggplot(d1) +
       geom_boxplot(aes(x=gender, y=height))
 h
 ```
+
+The rest of the boxplots follow:
 
 ```{r}
 w <- ggplot(d1) +
@@ -114,12 +134,17 @@ y
 
 3. Use {ggplot} to make scatterplots of height and weight in relation to age. Are these variables related? Why?
 
+there certainly is a correlation, I have my scatterplot now, but plan on running a correlation test maybe showing an R square value or soemthing. 
+
 ```{r}
-hw<- ggplot(d1) + 
-      geom_point(aes(x=weight, y=height))
+hw<-ggplot(d1, aes(x = weight, y = height)) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red")
 hw
 ```
-q-q plots
+4. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
+
+Histograms and q-q plots for each are below. Zombies killes and years of education do not show a normal distribtuion. 
 
 ```{r}
 hist(height)
@@ -142,8 +167,6 @@ qqnorm(zombies_killed)
 ```
 
 
-3. Use {ggplot} to make scatterplots of height and weight in relation to age. Are these variables related? Why?
-
 ```{r}
 hist(yrs_edu)
 qqnorm(yrs_edu)
@@ -151,7 +174,7 @@ qqnorm(yrs_edu)
 
 fix ones that are not normally distributed (zombies killed and yrs of edu) both appear to be right skewed
 
-actually.. these are probs poisson bc they are integers and idnependantly related 
+these are probably poisson because they are integers and idnependantly related 
 
 ```{r}
 ?dpois # dpois gives log density and ppois gives log distribution
@@ -169,46 +192,22 @@ hist(yd)
 yd<-dpois(x=0:10, lambda = ym)
 barplot(yd)
 
-#not sur eif either of these make sense
 ```
 
-the following is just me exploring
+I made barplots with the lambda (just the mean right?) This looks more normal, but I am not sure if these barplots are represetnativ eof the data or they are just ideal barplots?
 
-found this package that gives a skewness coefficient haha kind of cool not sure if it means anything though
+5. Now use the sample() function to sample ONE subset of 30 zombie survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable, and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you may need to base your estimate of the CIs on slightly different code than for the normal.
 
+
+This is how I subsettes the sample
 ```{r}
-install.packages("e1071") 
-library(e1071)
-sz<-skewness(zombies_killed)
-sz
-sy<-skewness(yrs_edu)
-sy
-
-```
-
-positively skewed data
-
-
-```{r}
-install.packages("outliers")
-library(outliers)
-outlier(zombies_killed)
-```
-
-use sample funcion to sample one subset of 30 zombie suruvivers without replacement, from pop
-
-calc mean and sd for each variable
-se for each and 95% ci for each mean
-different code for z and y
-
-```{r}
-
 ?sample
 nd<-d[sample(nrow(d), 30),]
 nd
+str(nd)
 ```
 
-mean and standard deviations of sample
+mean and standard deviations of samples
 
 ```{r}
 nheight<-nd$height
@@ -261,7 +260,7 @@ yse<-sqrt(nysd^2/30)
 yse
 ```
 
-these are all sample size 30 so t distrubution needs to be used 
+these are all sample size 30 so t distrubution needs to be used, I am also not sure why the to Poisson distirbutions would have different code for the CI
 
 ```{r}
 lower <- nhm - qt(1 - 0.05/2, df = 29) * hse  # (1-alpha)/2 each in the upper and lower tails of the distribution
@@ -294,31 +293,28 @@ yaci_t
 
 ```
 
-that definately needs to be revised and better annotated but 5/6 done so far
+6. Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples. Together with the first sample you drew, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of this distribution of means for each variable? How do the standard deviations of means compare to the standard errors estimated in [5]? What do these sampling distributions look like (a graph might help here)? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
 
-6. draw 99 samples of 30 
 
+** I'm really not sure about this one, I've tried multiple things. Right now all I can do is get a list off 99 elemtns but I am not sure if each elemtn has 30 rows. I know they have 10 columns though. 
 
 ```{r}
+k <- 99 # number of samples
+n <- 10 # size of each sample
 s <- NULL # dummy variable to hold each sample
-for (i in 1:99){
-    s[[i]] <- sample(d, size = 30, replace=FALSE)
+for (i in 1:k){
+    s[[i]] <- sample(d1,size=n, replace=FALSE)
 }
-head(s) #that worked but it looks odd
+head(s)
+
 ```
 
-calc mean now with first have 100 means for each variable = smapling dist
+
 
 ```{r}
-sample(d, 30, repla)
+sampling<-fucntion(d, nSamples = 99, nRows, 30)
+
+sample<-replicate(99,smaple(nrow(30), 10, replace = FALSE))
 
 ```
 
-
-means and sd of means 
-
-compare to se
-
-what do sampling distributions look like, graph
-
-normal?
