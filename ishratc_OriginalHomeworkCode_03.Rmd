@@ -312,7 +312,8 @@ head(s)
 
 
 ```{r}
-sampling<-fucntion(d, nSamples = 99, nRows, 30)
+sample(d, 10, replace = FALSE)
+?sampling
 
 sample<-replicate(99,smaple(nrow(30), 10, replace = FALSE))
 
