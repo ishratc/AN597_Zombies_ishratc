@@ -1,0 +1,296 @@
+---
+title: "ishratc_FinalHomeworkCode_03"
+author: "Ishrat Chowdhury"
+date: "October 14, 2019"
+output: html_document
+---
+
+
+First let's load our data into R
+
+```{r}
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall19/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+1. Calculate the population mean and standard deviation for each quantitative random variable.
+
+```{r}
+height<-d$height
+hm<-mean(height)
+hm
+hsd<-sd(height)
+hsd
+
+weight<-d$weight
+wm<-mean(weight)
+wm
+wsd<-sd(weight)
+wsd
+
+age<-d$age
+am<-mean(age)
+am
+asd<-sd(age)
+asd
+
+zombies_killed<-d$zombies_killed
+zm<-mean(zombies_killed)
+zm
+zsd<-sd(zombies_killed)
+zsd
+
+yrs_edu<-d$years_of_education
+ym<-mean(yrs_edu)
+ym
+ysd<-sd(yrs_edu)
+ysd
+
+```
+2. Use {ggplot} to make boxplots of each of these variables by gender.
+
+I had to reload the data with {readr}, because for some reason I couldnt use {ggplot} with {curl}.
+
+```{r}
+library(ggplot2)
+library(readr)
+d1_url<-"https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall19/zombies.csv"
+d1<-read_csv(d1_url)
+head(d1)
+```
+
+Height Boxplot
+
+```{r}
+h <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=height))
+h
+```
+
+The rest of the boxplots follow:
+
+```{r}
+w <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=weight))
+w
+```
+
+```{r}
+a <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=age))
+a
+```
+
+```{r}
+z <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=zombies_killed))
+z
+```
+
+```{r}
+y <- ggplot(d1) +
+      geom_boxplot(aes(x=gender, y=years_of_education))
+y
+```
+
+3. Use {ggplot} to make scatterplots of height and weight in relation to age. Are these variables related? Why?
+
+There certainly is a correlation. 
+
+```{r}
+hw<-ggplot(d1, aes(x = weight, y = height)) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") 
+hw + labs(title = "Height vs Weight")
+```
+4. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
+
+Histograms and q-q plots for each are below. Zombies killes and years of education do not show a normal distribtuion. 
+
+```{r}
+hist(height)
+qqnorm(height)
+```
+
+```{r}
+hist(weight)
+qqnorm(weight)
+```
+
+```{r}
+hist(age)
+qqnorm(age)
+```
+
+```{r}
+hist(zombies_killed)
+qqnorm(zombies_killed)
+```
+
+```{r}
+hist(yrs_edu)
+qqnorm(yrs_edu)
+```
+
+fix ones that are not normally distributed (zombies killed and yrs of edu) both appear to be right skewed
+
+these are probably poisson because they are integers and idnependantly related 
+
+```{r}
+?dpois # dpois gives log density and ppois gives log distribution
+zd<-dpois(0:12, lambda = zm)
+barplot(zd)
+```
+
+```{r}
+yd<-dpois(x=0:10, lambda = ym)
+barplot(yd)
+```
+
+5. Now use the sample() function to sample ONE subset of 30 zombie survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable, and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you may need to base your estimate of the CIs on slightly different code than for the normal.
+
+
+This is how I subsetted the sample
+```{r}
+?sample
+nd<-d[sample(nrow(d), 30),]
+nd
+str(nd)
+```
+
+mean and standard deviations of samples
+
+```{r}
+nheight<-nd$height
+nhm<-mean(nheight)
+nhm
+nhsd<-sd(nheight)
+nhsd
+
+nweight<-nd$weight
+nwm<-mean(nweight)
+nwm
+nwsd<-sd(nweight)
+nwsd
+
+nage<-nd$age
+nam<-mean(nage)
+nam
+nasd<-sd(nage)
+nasd
+
+nzombies_killed<-nd$zombies_killed
+nzm<-mean(nzombies_killed)
+nzm
+nzsd<-sd(nzombies_killed)
+nzsd
+
+nyrs_edu<-nd$years_of_education
+nym<-mean(nyrs_edu)
+nym
+nysd<-sd(nyrs_edu)
+nysd
+```
+
+standard errors and 95% ci
+
+```{r}
+hse<-sqrt(nhsd^2/30)
+hse
+
+wse<-sqrt(nwsd^2/30)
+wse
+
+ase<-sqrt(nasd^2/30)
+ase
+
+zse<-sqrt(nzsd^2/30)
+zse
+
+yse<-sqrt(nysd^2/30)
+yse
+```
+
+these are all sample size 30 so t distrubution needs to be used, I am also not sure why the to Poisson distirbutions would have different code for the CI
+
+```{r}
+lower <- nhm - qt(1 - 0.05/2, df = 29) * hse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nhm + qt(1 - 0.05/2, df = 29) * hse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+nhci_t <- c(lower, upper)
+nhci_t
+
+lower <- nwm - qt(1 - 0.05/2, df = 29) * wse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nwm + qt(1 - 0.05/2, df = 29) * wse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+nwci_t <- c(lower, upper)
+nwci_t
+
+lower <- nam - qt(1 - 0.05/2, df = 29) * ase  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nam + qt(1 - 0.05/2, df = 29) * ase  # (1-alpha)/2 each in the upper and lower tails of the distribution
+naci_t <- c(lower, upper)
+naci_t
+
+lower <- nzm - qt(1 - 0.05/2, df = 29) * zse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nzm + qt(1 - 0.05/2, df = 29) * zse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+zwci_t <- c(lower, upper)
+zwci_t
+
+lower <- nym - qt(1 - 0.05/2, df = 29) * yse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- nym + qt(1 - 0.05/2, df = 29) * yse  # (1-alpha)/2 each in the upper and lower tails of the distribution
+yaci_t <- c(lower, upper)
+yaci_t
+
+```
+
+6. Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples. Together with the first sample you drew, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of this distribution of means for each variable? How do the standard deviations of means compare to the standard errors estimated in [5]? What do these sampling distributions look like (a graph might help here)? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+
+
+```{r}
+k <- 99 # number of samples
+n <- 30 # size of each sample
+s <- NULL # dummy variable to hold each sample
+for (i in 1:k){
+    s[[i]] <- sample(d1,size=n, replace=TRUE)
+}
+head(s)
+
+```
+
+does not recognize variables as numbers and won't calculate standard devation and mean
+
+```{r}
+
+sheight<-s$height
+shm<-mean(sheight)
+shm
+shsd<-sd(sheight)
+shsd
+
+sweight<-s$weight
+swm<-mean(sweight)
+swm
+swsd<-sd(sweight)
+swsd
+
+sage<-s$age
+sam<-mean(sage)
+sam
+sasd<-sd(sage)
+sasd
+
+szombies_killed<-s$zombies_killed
+szm<-mean(szombies_killed)
+szm
+szsd<-sd(szombies_killed)
+szsd
+
+syrs_edu<-s$years_of_education
+sym<-mean(syrs_edu)
+sym
+sysd<-sd(syrs_edu)
+sysd
+
+```
+
+had issues up to this part
