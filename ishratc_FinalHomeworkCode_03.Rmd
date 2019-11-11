@@ -97,14 +97,39 @@ y
 
 3. Use {ggplot} to make scatterplots of height and weight in relation to age. Are these variables related? Why?
 
-There certainly is a correlation. 
+Revisiting the Homework after a while adn I realozed I completely misread the question. Here is an attempt to answer it correctly.
+
+Here is the scatterplot for height and age:
 
 ```{r}
-hw<-ggplot(d1, aes(x = weight, y = height)) + 
+hw<-ggplot(d1, aes(x = age, y = height)) + 
   geom_point() +
   stat_smooth(method = "lm", col = "red") 
-hw + labs(title = "Height vs Weight")
+hw + labs(title = "Height vs Age")
 ```
+
+Here is the scatterplot for weight and age:
+
+```{r}
+hw<-ggplot(d1, aes(x = age, y = weight)) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") 
+hw + labs(title = "Weight vs Age")
+```
+
+Visually, it look like there is more of a relation between height and age. Now that we know more about regression models we can runa linear regression and find out.
+
+```{r}
+lmha<-lm(age ~ height, data=d1)
+summary(lmha)
+
+lmwa<-lm(age ~ weight, data=d1)
+summary(lmwa)
+
+```
+
+The R squared for height is closer to one there for the linear relation between height and age is stronger than the relationship between weight and age.
+
 4. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
 
 Histograms and q-q plots for each are below. Zombies killes and years of education do not show a normal distribtuion. 
@@ -248,44 +273,46 @@ yaci_t
 
 ```{r}
 k <- 99 # number of samples
-n <- 30 # size of each sample
+n <- 10 # size of eacH sample, before I had this as 30, this does not make sense since it created multiple id columns caryring the same info, it should just be 10 because there are only 10 variables
 s <- NULL # dummy variable to hold each sample
 for (i in 1:k){
-    s[[i]] <- sample(d1,size=n, replace=TRUE)
+    s[[i]] <- sample(d1,size=n, replace=FALSE) #this has to be false otherwise the varibales will repeat
 }
 head(s)
 
 ```
 
-does not recognize variables as numbers and won't calculate standard devation and mean
+this looks right now, excpet for the fact that each sample has 1000 rows, as a result I expect the means and anything else computed will be the same, because it is likely justa reshuffling of the same dataset. Still am not able to make it randpmly select 30 form the original dataset
+
+Now I am able to get means and stabdard deviations form specfic parts of the new sample. I added the exact table number I wanted it to get from. I am unsure on how to get it for the entore data set. Below I have the calculations for 2 samples. As expected the results are the same because both are actaully the same dataset, justa reshuffling of it. If I can figure out how to ake the samples correctly I would expect different results here, I would also want to make a more efficient way of calculating these for all the samples without having to change the input every time.
 
 ```{r}
 
-sheight<-s$height
+sheight<-s[[1]]$height
 shm<-mean(sheight)
 shm
 shsd<-sd(sheight)
 shsd
 
-sweight<-s$weight
+sweight<-s[[1]]$weight
 swm<-mean(sweight)
 swm
 swsd<-sd(sweight)
 swsd
 
-sage<-s$age
+sage<-s[[1]]$age
 sam<-mean(sage)
 sam
 sasd<-sd(sage)
 sasd
 
-szombies_killed<-s$zombies_killed
+szombies_killed<-s[[1]]$zombies_killed
 szm<-mean(szombies_killed)
 szm
 szsd<-sd(szombies_killed)
 szsd
 
-syrs_edu<-s$years_of_education
+syrs_edu<-s[[1]]$years_of_education
 sym<-mean(syrs_edu)
 sym
 sysd<-sd(syrs_edu)
@@ -293,4 +320,51 @@ sysd
 
 ```
 
-had issues up to this part
+
+```{r}
+
+s2height<-s[[2]]$height
+s2hm<-mean(s2height)
+s2hm
+s2hsd<-sd(s2height)
+s2hsd
+
+s2weight<-s[[2]]$weight
+s2wm<-mean(s2weight)
+s2wm
+s2wsd<-sd(s2weight)
+s2wsd
+
+s2age<-s[[2]]$age
+s2am<-mean(s2age)
+s2am
+s2asd<-sd(s2age)
+s2asd
+
+s2zombies_killed<-s[[2]]$zombies_killed
+s2zm<-mean(szombies_killed)
+s2zm
+s2zsd<-sd(s2zombies_killed)
+s2zsd
+
+s2yrs_edu<-s[[2]]$years_of_education
+s2ym<-mean(s2yrs_edu)
+s2ym
+s2ysd<-sd(s2yrs_edu)
+s2ysd
+
+```
+
+I only did the sampling distirbution for one sample next because it should be the same for all
+
+```{r}
+qqnorm(s[[1]]$height)
+qqnorm(s[[1]]$weight)
+qqnorm(s[[1]]$age)
+qqnorm(s[[1]]$zombies_killed)
+qqnorm(s[[1]]$years_of_education)
+```
+
+since it is just a reshuffle it looks the same as before
+
+I did not try concaccotanting the old means with the new becuase the new mean in not representative of 99 samples, and they are all the same so until I figure out how to do the bootstrapping I will hold off on this part. 
