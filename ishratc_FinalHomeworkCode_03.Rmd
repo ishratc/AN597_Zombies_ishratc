@@ -272,99 +272,112 @@ yaci_t
 
 
 ```{r}
+library(dplyr)
+d1<-tbl_df(d1)
 k <- 99 # number of samples
-n <- 10 # size of eacH sample, before I had this as 30, this does not make sense since it created multiple id columns caryring the same info, it should just be 10 because there are only 10 variables
+n <- 30 # this has to be 30 because we are sleecting 30 rows
 s <- NULL # dummy variable to hold each sample
 for (i in 1:k){
-    s[[i]] <- sample(d1,size=n, replace=FALSE) #this has to be false otherwise the varibales will repeat
+    s[[i]] <- sample_n(d1,size=n, replace=FALSE) #we have to use a different function here, using this one that is from the dplyr package allows us t select rows from a tybl of data rather than a vector, this is why we were having problems before, the data we are selecting is not in the form of a vector
+
 }
-head(s)
+head(s)# now I have 99 samples of 30 rows with all the variables wooho!
 
 ```
 
-this looks right now, excpet for the fact that each sample has 1000 rows, as a result I expect the means and anything else computed will be the same, because it is likely justa reshuffling of the same dataset. Still am not able to make it randpmly select 30 form the original dataset
+Now usign a for loop I will get the means and standard devations of this sample
 
-Now I am able to get means and stabdard deviations form specfic parts of the new sample. I added the exact table number I wanted it to get from. I am unsure on how to get it for the entore data set. Below I have the calculations for 2 samples. As expected the results are the same because both are actaully the same dataset, justa reshuffling of it. If I can figure out how to ake the samples correctly I would expect different results here, I would also want to make a more efficient way of calculating these for all the samples without having to change the input every time.
+```{r}
+#use a for loop for this...
+
+set.mean.height<-NULL
+for (i in 1:99) {
+  set.mean.height[i]<-mean(s[[i]]$height)
+}
+set.mean.height # this is a vector of all the means from all the smaples for heigt
+
+#now lets do this for all the other variables
+
+set.mean.weight<-NULL
+for (i in 1:99) {
+  set.mean.weight[i]<-mean(s[[i]]$weight)
+}
+set.mean.weight
+
+set.mean.age<-NULL
+for (i in 1:99) {
+  set.mean.age[i]<-mean(s[[i]]$age)
+}
+set.mean.age
+
+set.mean.zombies_killed<-NULL
+for (i in 1:99) {
+  set.mean.zombies_killed[i]<-mean(s[[i]]$zombies_killed)
+}
+set.mean.zombies_killed
+
+set.mean.years_of_education<-NULL
+for (i in 1:99) {
+  set.mean.years_of_education[i]<-mean(s[[i]]$years_of_education)
+}
+set.mean.years_of_education
+
+```
+
+now lets add the first mean to this sample distirbution 
 
 ```{r}
 
-sheight<-s[[1]]$height
-shm<-mean(sheight)
-shm
-shsd<-sd(sheight)
-shsd
+set.mean.height<-append(set.mean.height, nhm) #this worked because now the vector has 100 values, lets do it for the rest
 
-sweight<-s[[1]]$weight
-swm<-mean(sweight)
-swm
-swsd<-sd(sweight)
-swsd
-
-sage<-s[[1]]$age
-sam<-mean(sage)
-sam
-sasd<-sd(sage)
-sasd
-
-szombies_killed<-s[[1]]$zombies_killed
-szm<-mean(szombies_killed)
-szm
-szsd<-sd(szombies_killed)
-szsd
-
-syrs_edu<-s[[1]]$years_of_education
-sym<-mean(syrs_edu)
-sym
-sysd<-sd(syrs_edu)
-sysd
-
+set.mean.weight<-append(set.mean.weight, nwm)
+set.mean.age<-append(set.mean.age, nam)
+set.mean.zombies_killed<-append(set.mean.zombies_killed, nzm)
+set.mean.years_of_education<-append(set.mean.years_of_education, nym)
 ```
 
+Now that we have the complete set of samples we should find the mean and standard deviation of this.
 
 ```{r}
 
-s2height<-s[[2]]$height
-s2hm<-mean(s2height)
-s2hm
-s2hsd<-sd(s2height)
-s2hsd
+sample_height_mean<-mean(set.mean.height)
+sample_height_mean
+sample_height_sd<-sd(set.mean.height)
+sample_height_sd
 
-s2weight<-s[[2]]$weight
-s2wm<-mean(s2weight)
-s2wm
-s2wsd<-sd(s2weight)
-s2wsd
+#now lets do it for all the variables
 
-s2age<-s[[2]]$age
-s2am<-mean(s2age)
-s2am
-s2asd<-sd(s2age)
-s2asd
+sample_weight_mean<-mean(set.mean.weight)
+sample_weight_mean
+sample_weight_sd<-sd(set.mean.weight)
+sample_weight_sd
 
-s2zombies_killed<-s[[2]]$zombies_killed
-s2zm<-mean(szombies_killed)
-s2zm
-s2zsd<-sd(s2zombies_killed)
-s2zsd
+sample_age_mean<-mean(set.mean.age)
+sample_age_mean
+sample_age_sd<-sd(set.mean.age)
+sample_age_sd
 
-s2yrs_edu<-s[[2]]$years_of_education
-s2ym<-mean(s2yrs_edu)
-s2ym
-s2ysd<-sd(s2yrs_edu)
-s2ysd
+sample_zombies_mean<-mean(set.mean.zombies_killed)
+sample_zombies_mean
+sample_zombies_sd<-sd(set.mean.zombies_killed)
+sample_zombies_sd
+
+sample_edu_mean<-mean(set.mean.years_of_education)
+sample_edu_mean
+sample_edu_sd<-sd(set.mean.years_of_education)
+sample_edu_sd
 
 ```
 
-I only did the sampling distirbution for one sample next because it should be the same for all
+How doe these compare to the one's from before? The means are still very close but the standard devaiations are much smaller now. This is as expected because there are multiple samples, whereas before it was just one sample and looking at the deviation in that one sample. If there are more samples, then the deviation will be smaller because the samples will resemble each other more. It is not a measure of the deivation in one smaple, rather the devaition among all the sample means. 
+
+Finally let's see what they look like. They all look nromal now. The ones that were nto normal before are nromal now since we are looking at a distribution of means among multiple samples. 
 
 ```{r}
-qqnorm(s[[1]]$height)
-qqnorm(s[[1]]$weight)
-qqnorm(s[[1]]$age)
-qqnorm(s[[1]]$zombies_killed)
-qqnorm(s[[1]]$years_of_education)
+qqnorm(set.mean.height)
+qqnorm(set.mean.weight)
+qqnorm(set.mean.age)
+qqnorm(set.mean.zombies_killed)
+qqnorm(set.mean.years_of_education)
 ```
 
-since it is just a reshuffle it looks the same as before
-
-I did not try concaccotanting the old means with the new becuase the new mean in not representative of 99 samples, and they are all the same so until I figure out how to do the bootstrapping I will hold off on this part. 
